@@ -2,7 +2,7 @@
 
 ## About
 
-`paramikojs` is a javascript port of [paramiko](http://www.lag.net/paramiko/).  It powers the [fireftp](https://github.com/mimecuvalo/fireftp) or [firessh](https://github.com/mimecuvalo/firessh) projects.  However, some caution should be taken if reusing the code as not all code paths have been tested (in python, yes, but not in the translated javascript).  So, coder beware!
+`paramikojs` is a javascript port of [paramiko](http://www.lag.net/paramiko/).  It powers the [fireftp](https://github.com/mimecuvalo/fireftp) and [firessh](https://github.com/mimecuvalo/firessh) projects.  However, some caution should be taken if reusing the code as not all code paths have been tested (in python, yes, but not in the translated javascript).  So, coder beware!
 
 ## Getting Started
 
