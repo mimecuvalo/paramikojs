@@ -143,7 +143,11 @@ paramikojs.AuthHandler.prototype = {
       if (this.auth_method == 'password') {
         m.add_boolean(false);
         var password = this.password;
-        password = this.transport.toUTF8.convertStringToUTF8(password, "UTF-8", 1);
+        try {
+          password = this.transport.toUTF8.convertStringToUTF8(password, "UTF-8", 1);
+        } catch(ex) {
+          this.transport._log(DEBUG, ex);
+        }
         m.add_string(password);
       } else if (this.auth_method == 'publickey') {
         m.add_boolean(true);

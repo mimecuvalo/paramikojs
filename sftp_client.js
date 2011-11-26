@@ -166,8 +166,18 @@ paramikojs.SFTPClient.prototype = {
       }
       var count = result[1].get_int();
       for (var x = 0; x < count; ++x) {
-        var filename = self.transport.toUTF8.convertStringToUTF8(result[1].get_string(), "UTF-8", 1);
-        var longname = self.transport.toUTF8.convertStringToUTF8(result[1].get_string(), "UTF-8", 1);
+        var filename = result[1].get_string();
+        try {
+          filename = self.transport.toUTF8.convertStringToUTF8(filename, "UTF-8", 1);
+        } catch(ex) {
+          self._log(DEBUG, ex);
+        }
+        var longname = result[1].get_string();
+        try {
+          longname = self.transport.toUTF8.convertStringToUTF8(longname, "UTF-8", 1);
+        } catch(ex) {
+          self._log(DEBUG, ex);
+        }
         var attr = new paramikojs.SFTPAttributes()._from_msg(result[1], filename, longname);
         if (filename != '.' && filename != '..') {
           filelist.push(attr);
@@ -598,7 +608,13 @@ paramikojs.SFTPClient.prototype = {
         callback(new paramikojs.ssh_exception.SFTPError('Readlink returned ' + count + ' results'));
         return;
       }
-      callback(self.transport.toUTF8.convertStringToUTF8(result[1].get_string(), "UTF-8", 1));
+      var path = result[1].get_string();
+      try {
+        path = self.transport.toUTF8.convertStringToUTF8(path, "UTF-8", 1);
+      } catch(ex) {
+        self._log(DEBUG, ex);
+      }
+      callback(path);
     };
 
     this._request(this.CMD_READLINK, readlink_callback, path);
@@ -632,7 +648,13 @@ paramikojs.SFTPClient.prototype = {
         callback(new paramikojs.ssh_exception.SFTPError('Realpath returned ' + count + ' results'));
         return;
       }
-      callback(self.transport.toUTF8.convertStringToUTF8(result[1].get_string(), "UTF-8", 1));
+      var path = result[1].get_string();
+      try {
+        path = self.transport.toUTF8.convertStringToUTF8(path, "UTF-8", 1);
+      } catch(ex) {
+        self._log(DEBUG, ex);
+      }
+      callback(path);
     };
 
     this._request(this.CMD_REALPATH, normalize_callback, path);
@@ -1078,6 +1100,8 @@ paramikojs.SFTPClient.prototype = {
     if (this._cwd == '/') {
       return this._cwd + path;
     }
-    return this._cwd + '/' + path;
+
+    var cwd = this.transport.fromUTF8.ConvertFromUnicode(this._cwd) + this.transport.fromUTF8.Finish();
+    return cwd + '/' + path;
   }
 };
