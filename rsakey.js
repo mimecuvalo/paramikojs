@@ -75,7 +75,7 @@ paramikojs.RSAKey.prototype = {
     var digest = new crypto.hash.SHA(data).digest();
     var pkcs1imified = this._pkcs1imify(digest);
 
-    var worker = new Worker('chrome://fireftp/content/js/connection/paramikojs/sign_ssh_data_worker.js');
+    var worker = new Worker('./js/connection/paramikojs/sign_ssh_data_worker.js');
     worker.onmessage = function(event) {
       var m = new paramikojs.Message();
       m.add_string('ssh-rsa');

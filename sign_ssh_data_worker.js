@@ -1,9 +1,9 @@
-importScripts('chrome://fireftp/content/js/connection/paramikojs/crypto/crypto.js',
-              'chrome://fireftp/content/js/connection/paramikojs/crypto/PublicKey/RSA.js',
-              'chrome://fireftp/content/js/connection/paramikojs/common.js',
-              'chrome://fireftp/content/js/connection/paramikojs/python_shim.js',
-              'chrome://fireftp/content/js/connection/paramikojs/BigInteger.js',
-              'chrome://fireftp/content/js/connection/paramikojs/util.js');
+importScripts('crypto/crypto.js',
+              'crypto/PublicKey/RSA.js',
+              'common.js',
+              'python_shim.js',
+              'BigInteger.js',
+              'util.js');
 
 onmessage = function(event) {
   var rsa = new crypto.publicKey.RSA().construct(new BigInteger(event.data.n, 10),
