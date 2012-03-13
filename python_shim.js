@@ -97,6 +97,7 @@ var struct = {
 };
 
 var sys = {
+  'browser' : navigator.userAgent.toLowerCase().indexOf('chrome') != -1 ? 'chrome' : 'mozilla',
   'platform' : navigator.platform.toLowerCase().indexOf('linux') != -1 ? 'linux' :
               (navigator.platform.toLowerCase().indexOf('mac') != -1   ? 'darwin' : 'win32')
 };

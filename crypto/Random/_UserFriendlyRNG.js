@@ -49,7 +49,11 @@ crypto.random._EntropySource.prototype = {
 // var bytebucket = prng.getService(Components.interfaces.nsIRandomGenerator).generateRandomBytes(numberOfBytes, buffer);
 
 crypto.random._EntropyCollector = function(accumulator) {
-  this._osrng = sys.platform == 'win32' ? new crypto.random.OSRNG.WindowsRNG() : new crypto.random.OSRNG.DevURandomRNG();
+  if (sys.browser == 'mozilla') {
+    this._osrng = sys.platform == 'win32' ? new crypto.random.OSRNG.WindowsRNG() : new crypto.random.OSRNG.DevURandomRNG();
+  } else {
+    this._osrng = new crypto.random.OSRNG.BrowserRNG();
+  }
   this._osrng_es = new crypto.random._EntropySource(accumulator, 255);
   this._time_es = new crypto.random._EntropySource(accumulator, 254);
   this._time2_es = new crypto.random._EntropySource(accumulator, 253);

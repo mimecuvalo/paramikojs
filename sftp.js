@@ -109,12 +109,16 @@ paramikojs.BaseSFTP.prototype = {
   _send_version_callback : function(callback) {
     try {
       var packet = this._read_packet();
-    } catch(ex if ex instanceof paramikojs.ssh_exception.WaitException) {
-      // waiting on socket
-      var self = this;
-      var wait_callback = function() { self._send_version_callback(callback) };
-      setTimeout(wait_callback, 10);
-      return;
+    } catch(ex) {
+      if (ex instanceof paramikojs.ssh_exception.WaitException) {
+        // waiting on socket
+        var self = this;
+        var wait_callback = function() { self._send_version_callback(callback) };
+        setTimeout(wait_callback, 10);
+        return;
+      } else {
+        throw ex;
+      }
     }
 
     if (packet[0] != this.CMD_VERSION) {
@@ -151,12 +155,16 @@ paramikojs.BaseSFTP.prototype = {
     while (out.length > 0) {
       try {
         var n = this.sock.send(out);
-      } catch(ex if ex instanceof paramikojs.ssh_exception.WaitException) {
-        // waiting on window adjust
-        var self = this;
-        var wait_callback = function() { self._write_all(out, send_packet_callback) };
-        setTimeout(wait_callback, 10);
-        return;
+      } catch(ex) {
+        if (ex instanceof paramikojs.ssh_exception.WaitException) {
+          // waiting on window adjust
+          var self = this;
+          var wait_callback = function() { self._write_all(out, send_packet_callback) };
+          setTimeout(wait_callback, 10);
+          return;
+        } else {
+          throw ex;
+        }
       }
       if (n <= 0) {
         throw new paramikojs.ssh_exception.EOFError();
@@ -201,10 +209,14 @@ paramikojs.BaseSFTP.prototype = {
     var size = struct.unpack('>I', x)[0];
     try {
       var data = this._read_all(size);
-    } catch(ex if ex instanceof paramikojs.ssh_exception.WaitException) {
-      // waiting on socket
-      this.sock.in_buffer = x + this.sock.in_buffer;              // add header back into in_buffer
-      throw new paramikojs.ssh_exception.WaitException("wait");   // rethrow exception
+    } catch(ex) {
+      if (ex instanceof paramikojs.ssh_exception.WaitException) {
+        // waiting on socket
+        this.sock.in_buffer = x + this.sock.in_buffer;              // add header back into in_buffer
+        throw new paramikojs.ssh_exception.WaitException("wait");   // rethrow exception
+      } else {
+        throw ex;
+      }
     }
     if (this.ultra_debug) {
       this.logger.log(DEBUG, paramikojs.util.format_binary(data, 'IN: '));

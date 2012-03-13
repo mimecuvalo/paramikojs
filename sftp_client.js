@@ -201,28 +201,32 @@ paramikojs.SFTPClient.prototype = {
     var files_to_check = [];
     for (var x = 0; x < filelist.length; ++x) {
       if (filelist[x].longname.charAt(0) == 'l') {
-        let index = x;
-        let filename = filelist[x].filename;
+        var index = x;
+        var filename = filelist[x].filename;
         files_to_check.push({ 'index': index, 'filename': filename });
       }
     }
 
     if (files_to_check.length) {
       for (var x = 0; x < files_to_check.length; ++x) {
-        let index = files_to_check[x].index;
-        let last = x == files_to_check.length - 1;
-        let symlink_callback = function(result) {
-          filelist[index].longname += ' -> ' + result;
-
-          if (last) {
-            listdir_callback(filelist);
-          }
-        };
+        var index = files_to_check[x].index;
+        var last = x == files_to_check.length - 1;
+        var symlink_callback = this.listdir_check_symlinks_helper(listdir_callback, filelist, index, last);
         this.readlink(files_to_check[x].filename, symlink_callback);
       }
     } else {
       listdir_callback(filelist);
     }
+  },
+
+  listdir_check_symlinks_helper : function(listdir_callback, filelist, index, last) {
+    return function(result) {
+      filelist[index].longname += ' -> ' + result;
+
+      if (last) {
+        listdir_callback(filelist);
+      }
+    };
   },
 
   /*
@@ -987,10 +991,14 @@ paramikojs.SFTPClient.prototype = {
     if (!result) {
       try {
         result = this._read_packet();
-      } catch(ex if ex instanceof paramikojs.ssh_exception.WaitException) {
-        // waiting on socket
-        setTimeout(wait_callback, 10);
-        return;
+      } catch(ex) {
+        if (ex instanceof paramikojs.ssh_exception.WaitException) {
+          // waiting on socket
+          setTimeout(wait_callback, 10);
+          return;
+        } else {
+          throw ex;
+        }
       }
     }
 
@@ -1024,16 +1032,20 @@ paramikojs.SFTPClient.prototype = {
       if (result[0] == this.CMD_STATUS) {
         try {
           this._convert_status(msg);
-        } catch(ex if ex instanceof paramikojs.ssh_exception.EOFError) {
-          if (callback) {
-            callback(null, true);
+        } catch(ex) {
+          if (ex instanceof paramikojs.ssh_exception.EOFError) {
+            if (callback) {
+              callback(null, true);
+            }
+            return;
+          } else if (ex instanceof paramikojs.ssh_exception.IOError) {
+            if (callback) {
+              callback(null, false, ex);
+            }
+            return;
+          } else {
+            throw ex;
           }
-          return;
-        } catch(ex if ex instanceof paramikojs.ssh_exception.IOError) {
-          if (callback) {
-            callback(null, false, ex);
-          }
-          return;
         }
       }
       if (callback) {

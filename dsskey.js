@@ -187,9 +187,13 @@ paramikojs.DSSKey.prototype = {
     var keylist = null;
     try {
       data = this._read_private_key_file('DSA', filename, password);
-    } catch (ex if ex instanceof paramikojs.ssh_exception.IsPuttyKey) {
-      data = null;
-      keylist = this._read_putty_private_key('DSA', ex.lines, password);
+    } catch (ex) {
+      if (ex instanceof paramikojs.ssh_exception.IsPuttyKey) {
+        data = null;
+        keylist = this._read_putty_private_key('DSA', ex.lines, password);
+      } else {
+        throw ex;
+      }
     }
     this._decode_key(data, keylist);
   },

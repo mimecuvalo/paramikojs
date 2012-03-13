@@ -244,13 +244,12 @@ paramikojs.PKey.prototype = {
     fstream.init(f, -1, 0, 0);
     cstream.init(fstream, "UTF-8", 0, 0); // you can use another encoding here if you wish
 
-    let (str = {}) {
-      let read = 0;
-      do {
-        read = cstream.readString(0xffffffff, str); // read as much as we can and put it in str.value
-        lines += str.value;
-      } while (read != 0);
-    }
+    var read = 0;
+    do {
+      var str = {};
+      read = cstream.readString(0xffffffff, str); // read as much as we can and put it in str.value
+      lines += str.value;
+    } while (read != 0);
     cstream.close(); // this closes fstream
 
     lines = lines.indexOf('\r\n') != -1 ? lines.split('\r\n') : lines.split('\n');

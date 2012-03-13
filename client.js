@@ -250,7 +250,7 @@ paramikojs.SSHClient.prototype = {
         establishing an SSH session
     @raise socket.error: if a socket error occurred while connecting
   */
-  connect : function(observer, controlOutstream, auth_success,
+  connect : function(observer, writeCallback, auth_success,
             hostname, port, username, password, pkey,
             key_filename, timeout, allow_agent, look_for_keys,
             compress) {
@@ -288,9 +288,13 @@ paramikojs.SSHClient.prototype = {
           self._policy.missing_host_key(self, server_hostkey_name, server_key);
           // if the callback returns, assume the key is ok
         }
-      } catch (ex if ex instanceof paramikojs.ssh_exception.UserRequestedDisconnect) {
-        self.close(true);
-        return;
+      } catch (ex) {
+        if (ex instanceof paramikojs.ssh_exception.UserRequestedDisconnect) {
+          self.close(true);
+          return;
+        } else {
+          throw ex;
+        }
       }
 
       var key_filenames;
@@ -306,7 +310,7 @@ paramikojs.SSHClient.prototype = {
 
     this._observer = observer;
     this._transport = new paramikojs.transport(observer);
-    this._transport.controlOutstream = controlOutstream;
+    this._transport.writeCallback = writeCallback;
     this._transport.use_compression(compress);
     this._transport.connect(null, authenticatedCallback, username, password, pkey, auth_success);
 

@@ -171,7 +171,7 @@ paramikojs.Packetizer.prototype = {
   write_all : function(out) {
     this.__keepalive_last = new Date();
     //this.__socket.writeControl(out);
-    this.__socket.controlOutstream.write(out, out.length);
+    this.__socket.writeCallback(out);
   },
 
   /*
@@ -274,10 +274,14 @@ paramikojs.Packetizer.prototype = {
     var buf;
     try {
       buf = this.read_all(packet_size + this.__mac_size_in - leftover.length);
-    } catch(ex if ex instanceof paramikojs.ssh_exception.WaitException) {
-      // not enough data yet to complete the packet
-      this.__decrypted_header = header;
-      throw new paramikojs.ssh_exception.WaitException("wait"); // rethrow exception
+    } catch(ex) {
+      if (ex instanceof paramikojs.ssh_exception.WaitException) {
+        // not enough data yet to complete the packet
+        this.__decrypted_header = header;
+        throw new paramikojs.ssh_exception.WaitException("wait"); // rethrow exception
+      } else {
+        throw ex;
+      }
     }
 
     var packet = buf.substring(0, packet_size - leftover.length);

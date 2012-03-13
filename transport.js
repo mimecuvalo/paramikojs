@@ -49,10 +49,10 @@ paramikojs.transport.prototype = {
   fullBuffer : '',
   gotWelcomeMessage : false,
   authenticatedCallback : null,
-  controlOutstream : null,
+  writeCallback : null,
 
-  toUTF8 : Components.classes["@mozilla.org/intl/utf8converterservice;1"].getService       (Components.interfaces.nsIUTF8ConverterService),
-  fromUTF8 : Components.classes["@mozilla.org/intl/scriptableunicodeconverter"].getService   (Components.interfaces.nsIScriptableUnicodeConverter),
+  toUTF8 : (Components ? Components.classes["@mozilla.org/intl/utf8converterservice;1"].getService(Components.interfaces.nsIUTF8ConverterService) : null),
+  fromUTF8 : (Components ? Components.classes["@mozilla.org/intl/scriptableunicodeconverter"].getService   (Components.interfaces.nsIScriptableUnicodeConverter) : null),
 
   _PROTO_ID : '2.0',
   _CLIENT_ID : 'FireFTP_',
@@ -917,9 +917,13 @@ paramikojs.transport.prototype = {
 
     try {
       var msg = !this.gotWelcomeMessage ? "" : this.packetizer.read_message();
-    } catch(ex if ex instanceof paramikojs.ssh_exception.WaitException) {
-      // not enough data yet to complete the packet, defer
-      return;
+    } catch(ex) {
+      if (ex instanceof paramikojs.ssh_exception.WaitException) {
+        // not enough data yet to complete the packet, defer
+        return;
+      } else {
+        throw ex;
+      }
     }
 
     if (!this.gotWelcomeMessage) {
