@@ -1,3 +1,11 @@
+if (navigator.userAgent.toLowerCase().indexOf('chrome') == -1) { // Mozilla
+  function crypto() {}
+
+  crypto.prototype = {
+    
+  };
+}
+
 crypto.cipher    = {};
 crypto.hash      = {};
 crypto.protocol  = {};
