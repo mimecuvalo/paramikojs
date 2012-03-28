@@ -75,7 +75,11 @@ paramikojs.RSAKey.prototype = {
     var digest = new crypto.hash.SHA(data).digest();
     var pkcs1imified = this._pkcs1imify(digest);
 
-    var worker = new Worker('./js/connection/paramikojs/sign_ssh_data_worker.js');
+    // XXX well, ain't this some shit.  We have to use gRsaKeyWorkerJs b/c
+    // the relative url won't work if we have ssh:// or sftp:// as the url instead of chrome://
+    // AAARRRGH
+    // var worker = new Worker('./js/connection/paramikojs/sign_ssh_data_worker.js');
+    var worker = new Worker(gRsaKeyWorkerJs);
     worker.onmessage = function(event) {
       var m = new paramikojs.Message();
       m.add_string('ssh-rsa');
