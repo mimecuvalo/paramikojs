@@ -1,5 +1,5 @@
 if (navigator.userAgent.toLowerCase().indexOf('chrome') == -1) { // Mozilla
-  function crypto() {}
+  crypto = function() {};
 
   crypto.prototype = {
     

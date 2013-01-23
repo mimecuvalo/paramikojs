@@ -123,26 +123,44 @@ paramikojs.HostKeys.prototype = {
     @raise IOError: if there was an error reading the file
   */
   load : function(filename) {
-    var file = localFile.init(filename);
-    if (!file.exists()) {
-      this._entries = [];
-      return;
+    if (Components) { // Mozilla
+      var file = localFile.init(filename);
+      if (!file.exists()) {
+        this._entries = [];
+        return;
+      }
+
+      var fstream = Components.classes["@mozilla.org/network/file-input-stream;1"].createInstance(Components.interfaces.nsIFileInputStream);
+      fstream.init(file, -1, 0, 0);
+
+      var charset = "UTF-8";
+      var is = Components.classes["@mozilla.org/intl/converter-input-stream;1"].createInstance(Components.interfaces.nsIConverterInputStream);
+      is.init(fstream, charset, 1024, 0xFFFD);
+      is.QueryInterface(Components.interfaces.nsIUnicharLineInputStream);
+      this.loadHelper(is);
+    } else {  // Chrome
+      var self = this;
+      chrome.storage.local.get("host_keys", function(value) {
+        is = value.host_keys || '';
+        self.loadHelper(is);
+      });
     }
+  },
 
-    var fstream = Components.classes["@mozilla.org/network/file-input-stream;1"].createInstance(Components.interfaces.nsIFileInputStream);
-    fstream.init(file, -1, 0, 0);
-
-    var charset = "UTF-8";
-    var is = Components.classes["@mozilla.org/intl/converter-input-stream;1"].createInstance(Components.interfaces.nsIConverterInputStream);
-    is.init(fstream, charset, 1024, 0xFFFD);
-    is.QueryInterface(Components.interfaces.nsIUnicharLineInputStream);
-
+  loadHelper : function(is) {
     var line = {};
     var cont;
     do {
       line = {};
-      cont = is.readLine(line);
-      line = line.value.trim();
+      if (Components) { // Mozilla
+        cont = is.readLine(line);
+        line = line.value.trim();
+      } else {  // Chrome
+        line = is.substring(0, is.indexOf('\n'));
+        is = is.substring(line.length + 1);
+        line = line.trim();
+        cont = line.length;
+      }
       if (!line.length || line[0] == '#') {
         continue;
       }
@@ -153,7 +171,9 @@ paramikojs.HostKeys.prototype = {
       // Now you can do something with line.value
     } while (cont);
 
-    is.close();
+    if (Components) {
+      is.close();
+    }
   },
 
   /*
@@ -170,11 +190,14 @@ paramikojs.HostKeys.prototype = {
     @since: 1.6.1
   */
   save : function(filename) {
-    var file = localFile.init(filename);
-    var foStream = Components.classes["@mozilla.org/network/file-output-stream;1"].createInstance(Components.interfaces.nsIFileOutputStream);
-    foStream.init(file, 0x02 | 0x08 | 0x20, 0644, 0);
-    var converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);
-    converter.init(foStream, "UTF-8", 0, 0);
+    if (Components) { // Mozilla
+      var file = localFile.init(filename);
+      var foStream = Components.classes["@mozilla.org/network/file-output-stream;1"].createInstance(Components.interfaces.nsIFileOutputStream);
+      foStream.init(file, 0x02 | 0x08 | 0x20, 0644, 0);
+      var converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);
+      converter.init(foStream, "UTF-8", 0, 0);
+    }
+
     var data = "";
     for (var x = 0; x < this._entries.length; ++x) {
       var line = this._entries[x].to_line();
@@ -182,8 +205,13 @@ paramikojs.HostKeys.prototype = {
         data += line;
       }
     }
-    converter.writeString(data);
-    converter.close();
+
+    if (Components) { // Mozilla
+      converter.writeString(data);
+      converter.close();
+    } else {
+      chrome.storage.local.set({'host_keys': data});
+    }
   },
 
   /*

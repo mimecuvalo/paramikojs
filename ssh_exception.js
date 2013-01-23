@@ -122,7 +122,7 @@ paramikojs.ssh_exception.BadAuthenticationType = function(message, types) {
 }
 
 paramikojs.ssh_exception.BadAuthenticationType.prototype.toString = function () {
-  return this.name + ': "' + this.message + '"' + '(allowed_types=' + this.allowed_types.toSource() + ')';
+  return this.name + ': "' + this.message + '"' + '(allowed_types=' + JSON.stringify(this.allowed_types) + ')';
 }
 
 /*

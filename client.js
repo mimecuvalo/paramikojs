@@ -504,7 +504,7 @@ paramikojs.SSHClient.prototype = {
     if (saved_exception) {
       throw saved_exception;
     }
-    throw new paramikojs.ssh_exception.SSHException('No authentication methods available');
+    throw new paramikojs.ssh_exception.AuthenticationException('No authentication methods available');
   },
 
   _log : function(level, msg) {
