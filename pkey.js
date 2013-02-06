@@ -232,25 +232,30 @@ paramikojs.PKey.prototype = {
     @raise SSHException: if the key file is invalid.
   */
   _read_private_key_file : function(tag, filename, password) {
-    var file = localFile.init(filename);
+    var file = !Components ? filename : localFile.init(filename);
     var data = this._read_private_key(tag, file, password);
     return data;
   },
 
   _read_private_key : function(tag, f, password) {
-    var lines = "";
-    var fstream = Components.classes["@mozilla.org/network/file-input-stream;1"].createInstance(Components.interfaces.nsIFileInputStream);
-    var cstream = Components.classes["@mozilla.org/intl/converter-input-stream;1"].createInstance(Components.interfaces.nsIConverterInputStream);
-    fstream.init(f, -1, 0, 0);
-    cstream.init(fstream, "UTF-8", 0, 0); // you can use another encoding here if you wish
+    var lines;
+    if (!Components) {  // Chrome
+      lines = gKeys[f];
+    } else {
+      lines = "";
+      var fstream = Components.classes["@mozilla.org/network/file-input-stream;1"].createInstance(Components.interfaces.nsIFileInputStream);
+      var cstream = Components.classes["@mozilla.org/intl/converter-input-stream;1"].createInstance(Components.interfaces.nsIConverterInputStream);
+      fstream.init(f, -1, 0, 0);
+      cstream.init(fstream, "UTF-8", 0, 0); // you can use another encoding here if you wish
 
-    var read = 0;
-    do {
-      var str = {};
-      read = cstream.readString(0xffffffff, str); // read as much as we can and put it in str.value
-      lines += str.value;
-    } while (read != 0);
-    cstream.close(); // this closes fstream
+      var read = 0;
+      do {
+        var str = {};
+        read = cstream.readString(0xffffffff, str); // read as much as we can and put it in str.value
+        lines += str.value;
+      } while (read != 0);
+      cstream.close(); // this closes fstream
+    }
 
     lines = lines.indexOf('\r\n') != -1 ? lines.split('\r\n') : lines.split('\n');
 

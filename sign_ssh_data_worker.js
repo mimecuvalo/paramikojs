@@ -1,3 +1,9 @@
+// We need this in Chrome for this worker but not in the main app. Hmm...
+crypto = function() {};
+crypto.prototype = {
+  
+};
+
 importScripts('crypto/crypto.js',
               'crypto/PublicKey/RSA.js',
               'common.js',
