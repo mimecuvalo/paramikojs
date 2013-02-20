@@ -7,12 +7,14 @@ paramikojs.AutoAddPolicy = function () {
 }
 
 paramikojs.AutoAddPolicy.prototype = {
-	missing_host_key : function(client, hostname, key) {
+	missing_host_key : function(client, hostname, key, callback) {
     client._host_keys.add(hostname, key.get_name(), key);
     if (client._host_keys_filename) {
       client.save_host_keys(client._host_keys_filename);
     }
     debug('Adding ' + key.get_name() + ' host key for ' + hostname + ': ' + paramikojs.util.hexify(key.get_fingerprint()));
+
+    callback(true);
   }
 };
 
@@ -25,24 +27,30 @@ paramikojs.AskPolicy = function () {
 }
 
 paramikojs.AskPolicy.prototype = {
-	missing_host_key : function(client, hostname, key) {
+	missing_host_key : function(client, hostname, key, callback) {
     var raw_fingerprint = paramikojs.util.hexify(key.get_fingerprint()).toLowerCase();
     var fingerprint = "";
     for (var x = 0; x < raw_fingerprint.length; x += 2) {
       fingerprint += raw_fingerprint[x] + raw_fingerprint[x + 1] + ':';
     }
     fingerprint = fingerprint.substring(0, fingerprint.length - 1);
-    var answer = client._observer.onSftpCache(null, key.get_name() + ' ' + key.get_bits() + '\n' + fingerprint);
 
-    if (answer == 'y') {
-      client._host_keys.add(hostname, key.get_name(), key);
-      if (client._host_keys_filename) {
-        client.save_host_keys(client._host_keys_filename);
+    var cacheCallback = function(answer) {
+      if (answer == 'y') {
+        client._host_keys.add(hostname, key.get_name(), key);
+        if (client._host_keys_filename) {
+          client.save_host_keys(client._host_keys_filename);
+        }
+        debug('Adding ' + key.get_name() + ' host key for ' + hostname + ': ' + fingerprint);
+        callback(true);
+      } else if (!answer) {
+        callback(false);
+      } else {
+        callback(true);
       }
-      debug('Adding ' + key.get_name() + ' host key for ' + hostname + ': ' + fingerprint);
-    } else if (!answer) {
-      throw new paramikojs.ssh_exception.UserRequestedDisconnect('Unknown server ' + hostname);
-    }
+    };
+
+    client._observer.onSftpCache(null, key.get_name() + ' ' + key.get_bits() + '\n' + fingerprint, cacheCallback);
   }
 };
 
@@ -56,9 +64,9 @@ paramikojs.RejectPolicy = function () {
 }
 
 paramikojs.RejectPolicy.prototype = {
-	missing_host_key : function(client, hostname, key) {
+	missing_host_key : function(client, hostname, key, callback) {
     debug('Rejecting ' + key.get_name() + ' host key for ' + hostname + ': ' + paramikojs.util.hexify(key.get_fingerprint()));
-    throw new paramikojs.ssh_exception.SSHException('Unknown server ' + hostname);
+    callback(false);
   }
 };
 
@@ -72,8 +80,9 @@ paramikojs.WarningPolicy = function () {
 }
 
 paramikojs.WarningPolicy.prototype = {
-	missing_host_key : function(client, hostname, key) {
+	missing_host_key : function(client, hostname, key, callback) {
     debug('Unknown ' + key.get_name() + ' host key for ' + hostname + ': ' + paramikojs.util.hexify(key.get_fingerprint()));
+    callback(true);
   }
 };
 
@@ -276,36 +285,34 @@ paramikojs.SSHClient.prototype = {
         our_server_key = self._host_keys.get(server_hostkey_name)[keytype];
       }
 
-      try {
-        if (!our_server_key) {
-          // will raise exception if the key is rejected; let that fall out
-          self._policy.missing_host_key(self, server_hostkey_name, server_key);
-          // if the callback returns, assume the key is ok
-          our_server_key = server_key;
-        }
-
-        if (!server_key.compare(our_server_key)) {
-          self._policy.missing_host_key(self, server_hostkey_name, server_key);
-          // if the callback returns, assume the key is ok
-        }
-      } catch (ex) {
-        if (ex instanceof paramikojs.ssh_exception.UserRequestedDisconnect) {
+      var cacheCallback = function(accepted) {
+        if (!accepted) {
           self.close(true);
           return;
-        } else {
-          throw ex;
         }
-      }
 
-      var key_filenames;
-      if (!key_filename) {
-        key_filenames = [];
-      } else if (typeof key_filename == "string") {
-        key_filenames = [ key_filename ];
+        var key_filenames;
+        if (!key_filename) {
+          key_filenames = [];
+        } else if (typeof key_filename == "string") {
+          key_filenames = [ key_filename ];
+        } else {
+          key_filenames = key_filename;
+        }
+        self._auth(username, password, pkey, key_filenames, allow_agent, look_for_keys);
+      };
+
+      if (!our_server_key) {
+        // will raise exception if the key is rejected; let that fall out
+        self._policy.missing_host_key(self, server_hostkey_name, server_key, cacheCallback);
+        // if the callback returns, assume the key is ok
+        our_server_key = server_key;
+      } else if (!server_key.compare(our_server_key)) {
+        self._policy.missing_host_key(self, server_hostkey_name, server_key, cacheCallback);
+        // if the callback returns, assume the key is ok
       } else {
-        key_filenames = key_filename;
+        cacheCallback(true);
       }
-      self._auth(username, password, pkey, key_filenames, allow_agent, look_for_keys);
     };
 
     this._observer = observer;
