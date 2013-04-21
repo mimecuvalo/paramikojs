@@ -211,8 +211,8 @@ paramikojs.Packetizer.prototype = {
       data = this.__compress_engine_out.compress(data);
     }
     var packet = this._build_packet(data);
-    this._log(DEBUG, 'Write packet <' + cmd_name + '>, length ' + orig_len);
     if (this.__dump_packets) {
+      this._log(DEBUG, 'Write packet <' + cmd_name + '>, length ' + orig_len);
       this._log(DEBUG, paramikojs.util.format_binary(packet, 'OUT: '));
     }
     var out;
@@ -304,7 +304,9 @@ paramikojs.Packetizer.prototype = {
     }
     var padding = packet[0].charCodeAt(0);
     var payload = packet.substring(1, packet_size - padding);
-    this._log(DEBUG, 'Got payload (' + packet_size + ' bytes, ' + padding + ' padding)');
+    if (this.__dump_packets) {
+      this._log(DEBUG, 'Got payload (' + packet_size + ' bytes, ' + padding + ' padding)');
+    }
 
     if (this.__compress_engine_in) {
       payload = this.__compress_engine_in.decompress(payload);
@@ -339,7 +341,9 @@ paramikojs.Packetizer.prototype = {
     } else {
       cmd_name = '$' + cmd;
     }
-    this._log(DEBUG, 'Read packet <' + cmd_name + '>, length ' + payload.length);
+    if (this.__dump_packets) {
+      this._log(DEBUG, 'Read packet <' + cmd_name + '>, length ' + payload.length);
+    }
     if (false) {
       this.__socket.run({ 'ptype': cmd, 'm': msg });
     }
