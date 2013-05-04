@@ -32,17 +32,17 @@
              http://en.wikipedia.org/wiki/Blowfish_(cipher)
 */
 
-crypto.cipher.Blowfish = function (key, mode, iv) {
-  this.c = new this.context(crypto.toByteArray(key));
+kryptos.cipher.Blowfish = function (key, mode, iv) {
+  this.c = new this.context(kryptos.toByteArray(key));
   this.mode = mode;
-  this.originalIv = iv = crypto.toByteArray(iv);
+  this.originalIv = iv = kryptos.toByteArray(iv);
   this.iv = ( iv[0] << 24 ) | ( iv[1] << 16 ) | ( iv[2] << 8 ) | iv[3];
   this.iv2 = ( iv[4] << 24 ) | ( iv[5] << 16 ) | ( iv[6] << 8 ) | iv[7];
 }
 
-crypto.cipher.Blowfish.MODE_CBC = 2;
+kryptos.cipher.Blowfish.MODE_CBC = 2;
 
-crypto.cipher.Blowfish.prototype = {
+kryptos.cipher.Blowfish.prototype = {
 
     context: function( k )
     {

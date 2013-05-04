@@ -1,8 +1,8 @@
-crypto.random.OSRNG.BrowserRNG = function() {
+kryptos.random.OSRNG.BrowserRNG = function() {
   
 }
 
-crypto.random.OSRNG.BrowserRNG.prototype = {
+kryptos.random.OSRNG.BrowserRNG.prototype = {
   flush : function() {
     // pass
   },

@@ -1,19 +1,19 @@
-crypto.hash.SHA256 = function(str) {
-  inherit(this, new crypto.hash.baseHash(str));
+kryptos.hash.SHA256 = function(str) {
+  inherit(this, new kryptos.hash.baseHash(str));
 }
 
-crypto.hash.SHA256.digest_size = 32;
+kryptos.hash.SHA256.digest_size = 32;
 
-crypto.hash.SHA256.prototype = {
+kryptos.hash.SHA256.prototype = {
   type : 'sha256'
 };
 
 // http://code.google.com/p/crypto-js/source/browse/branches/2.x/src/SHA256.js
 // BSD license: http://www.opensource.org/licenses/bsd-license.php
 if (!Components) {  // Chrome
-  crypto.hash.SHA256.prototype = {
+  kryptos.hash.SHA256.prototype = {
     digest: function() {
-      var hashData = crypto.toByteArray(this.data);
+      var hashData = kryptos.toByteArray(this.data);
 
       // Constants
       var K = [ 0x428A2F98, 0x71374491, 0xB5C0FBCF, 0xE9B5DBA5,
@@ -33,7 +33,7 @@ if (!Components) {  // Chrome
           0x748F82EE, 0x78A5636F, 0x84C87814, 0x8CC70208,
           0x90BEFFFA, 0xA4506CEB, 0xBEF9A3F7, 0xC67178F2 ];
 
-      var m = crypto.bytesToWords(hashData),
+      var m = kryptos.bytesToWords(hashData),
           l = hashData.length * 8,
           H = [ 0x6A09E667, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A,
                 0x510E527F, 0x9B05688C, 0x1F83D9AB, 0x5BE0CD19 ],
@@ -104,7 +104,7 @@ if (!Components) {  // Chrome
         H[7] += h;
       }
 
-      return crypto.fromByteArray(crypto.wordsToBytes(H));
+      return kryptos.fromByteArray(kryptos.wordsToBytes(H));
     }
   };
 }

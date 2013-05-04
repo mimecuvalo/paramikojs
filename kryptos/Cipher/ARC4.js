@@ -135,16 +135,16 @@ goog.crypt.Arc4.prototype.crypt = function(data, opt_length) {
 };
 
 
-crypto.cipher.ARC4 = function(key) {
+kryptos.cipher.ARC4 = function(key) {
   this.cipher = new goog.crypt.Arc4();
-  this.cipher.setKey(crypto.toByteArray(key));
+  this.cipher.setKey(kryptos.toByteArray(key));
 }
 
-crypto.cipher.ARC4.prototype = {
+kryptos.cipher.ARC4.prototype = {
   encrypt : function(data) {
-    var data = crypto.toByteArray(data);
+    var data = kryptos.toByteArray(data);
     this.cipher.crypt(data);
-    return crypto.fromByteArray(data);
+    return kryptos.fromByteArray(data);
   },
 
   decrypt : function(data) {

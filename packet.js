@@ -226,7 +226,7 @@ paramikojs.Packetizer.prototype = {
     var payload;
     if (this.__block_engine_out) {
       payload = struct.pack('>I', this.__sequence_number_out) + packet;
-      out += crypto.hash.HMAC(this.__mac_key_out, payload, this.__mac_engine_out).substring(0, this.__mac_size_out);
+      out += kryptos.hash.HMAC(this.__mac_key_out, payload, this.__mac_engine_out).substring(0, this.__mac_size_out);
     }
     this.__sequence_number_out = (this.__sequence_number_out + 1) & 0xffffffff;
     this.write_all(out);
@@ -297,7 +297,7 @@ paramikojs.Packetizer.prototype = {
     if (this.__mac_size_in > 0) {
       var mac = post_packet.substring(0, this.__mac_size_in);
       var mac_payload = struct.pack('>I', this.__sequence_number_in) + struct.pack('>I', packet_size) + packet;
-      var my_mac = crypto.hash.HMAC(this.__mac_key_in, mac_payload, this.__mac_engine_in).substring(0, this.__mac_size_in);
+      var my_mac = kryptos.hash.HMAC(this.__mac_key_in, mac_payload, this.__mac_engine_in).substring(0, this.__mac_size_in);
       if (my_mac != mac) {
         throw new paramikojs.ssh_exception.SSHException('Mismatched MAC');
       }

@@ -1,7 +1,7 @@
 paramikojs.transport = function(observer) {
   this.observer = observer;
 
-  this.rng = new crypto.random.Random();
+  this.rng = new kryptos.random.Random();
   this.packetizer = new paramikojs.Packetizer(this);
   this.packetizer.set_hexdump(false);
   this.local_version = 'SSH-' + this._PROTO_ID + '-' + this._CLIENT_ID + this.observer.version;
@@ -69,21 +69,21 @@ paramikojs.transport.prototype = {
   _preferred_compression : [ 'none' ],
 
   _cipher_info : {
-    'aes128-ctr': { 'class': crypto.cipher.AES, 'mode': crypto.cipher.AES.MODE_CTR, 'block-size': 16, 'key-size': 16 },
-    'aes256-ctr': { 'class': crypto.cipher.AES, 'mode': crypto.cipher.AES.MODE_CTR, 'block-size': 16, 'key-size': 32 },
-    'blowfish-cbc': { 'class': crypto.cipher.Blowfish, 'mode': crypto.cipher.Blowfish.MODE_CBC, 'block-size': 8, 'key-size': 16 },
-    'aes128-cbc': { 'class': crypto.cipher.AES, 'mode': crypto.cipher.AES.MODE_CBC, 'block-size': 16, 'key-size': 16 },
-    'aes256-cbc': { 'class': crypto.cipher.AES, 'mode': crypto.cipher.AES.MODE_CBC, 'block-size': 16, 'key-size': 32 },
-    '3des-cbc': { 'class': crypto.cipher.DES3, 'mode': crypto.cipher.DES3.MODE_CBC, 'block-size': 8, 'key-size': 24 },
-    'arcfour128': { 'class': crypto.cipher.ARC4, 'mode': null, 'block-size': 8, 'key-size': 16 },
-    'arcfour256': { 'class': crypto.cipher.ARC4, 'mode': null, 'block-size': 8, 'key-size': 32 }
+    'aes128-ctr': { 'class': kryptos.cipher.AES, 'mode': kryptos.cipher.AES.MODE_CTR, 'block-size': 16, 'key-size': 16 },
+    'aes256-ctr': { 'class': kryptos.cipher.AES, 'mode': kryptos.cipher.AES.MODE_CTR, 'block-size': 16, 'key-size': 32 },
+    'blowfish-cbc': { 'class': kryptos.cipher.Blowfish, 'mode': kryptos.cipher.Blowfish.MODE_CBC, 'block-size': 8, 'key-size': 16 },
+    'aes128-cbc': { 'class': kryptos.cipher.AES, 'mode': kryptos.cipher.AES.MODE_CBC, 'block-size': 16, 'key-size': 16 },
+    'aes256-cbc': { 'class': kryptos.cipher.AES, 'mode': kryptos.cipher.AES.MODE_CBC, 'block-size': 16, 'key-size': 32 },
+    '3des-cbc': { 'class': kryptos.cipher.DES3, 'mode': kryptos.cipher.DES3.MODE_CBC, 'block-size': 8, 'key-size': 24 },
+    'arcfour128': { 'class': kryptos.cipher.ARC4, 'mode': null, 'block-size': 8, 'key-size': 16 },
+    'arcfour256': { 'class': kryptos.cipher.ARC4, 'mode': null, 'block-size': 8, 'key-size': 32 }
   },
 
   _mac_info : {
-    'hmac-sha1': { 'class': crypto.hash.HMAC_SHA, 'size': 20 },
-    'hmac-sha1-96': { 'class': crypto.hash.HMAC_SHA, 'size': 12 },
-    'hmac-md5': { 'class': crypto.hash.HMAC_MD5, 'size': 16 },
-    'hmac-md5-96': { 'class': crypto.hash.HMAC_MD5, 'size': 12 }
+    'hmac-sha1': { 'class': kryptos.hash.HMAC_SHA, 'size': 20 },
+    'hmac-sha1-96': { 'class': kryptos.hash.HMAC_SHA, 'size': 12 },
+    'hmac-md5': { 'class': kryptos.hash.HMAC_MD5, 'size': 16 },
+    'hmac-md5-96': { 'class': kryptos.hash.HMAC_MD5, 'size': 12 }
   },
 
   _key_info : {
@@ -861,13 +861,13 @@ paramikojs.transport.prototype = {
     m.add_byte(id);
     m.add_bytes(this.session_id);
     var out, sofar, digest;
-    out = sofar = new crypto.hash.SHA(m.toString()).digest();
+    out = sofar = new kryptos.hash.SHA(m.toString()).digest();
     while (out.length < nbytes) {
       m = new paramikojs.Message();
       m.add_mpint(this.K);
       m.add_bytes(this.H);
       m.add_bytes(sofar);
-      digest = new crypto.hash.SHA(m.toString()).digest();
+      digest = new kryptos.hash.SHA(m.toString()).digest();
       out += digest;
       sofar += digest;
     }

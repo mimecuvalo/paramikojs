@@ -1,8 +1,8 @@
-crypto.publicKey.RSA = function() {
+kryptos.publicKey.RSA = function() {
   
 }
 
-crypto.publicKey.RSA.prototype = {
+kryptos.publicKey.RSA.prototype = {
   construct : function(n, e, d) {
     this.n = n;
     this.e = e;

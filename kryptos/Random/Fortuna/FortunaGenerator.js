@@ -1,6 +1,6 @@
-crypto.random.Fortuna.FortunaGenerator = {};
+kryptos.random.Fortuna.FortunaGenerator = {};
 
-crypto.random.Fortuna.FortunaGenerator.AESGenerator = function() {
+kryptos.random.Fortuna.FortunaGenerator.AESGenerator = function() {
   /*
     The Fortuna "generator"
 
@@ -22,7 +22,7 @@ crypto.random.Fortuna.FortunaGenerator.AESGenerator = function() {
   this.max_bytes_per_request = this.max_blocks_per_request * this.block_size;
 }
 
-crypto.random.Fortuna.FortunaGenerator.AESGenerator.prototype = {
+kryptos.random.Fortuna.FortunaGenerator.AESGenerator.prototype = {
   block_size : 16,     // output block size in octets (128 bits)
   key_size : 32,       // key size in octets (256 bits)
 
@@ -42,7 +42,7 @@ crypto.random.Fortuna.FortunaGenerator.AESGenerator.prototype = {
     if (!this.key) {
       this.key = new Array(this.key_size + 1).join("\0");
     }
-    this._set_key(new crypto.random.Fortuna.SHAd256(this.key + seed).digest());
+    this._set_key(new kryptos.random.Fortuna.SHAd256(this.key + seed).digest());
     this.counter.call();  // increment counter
   },
 
@@ -61,7 +61,7 @@ crypto.random.Fortuna.FortunaGenerator.AESGenerator.prototype = {
 
   _set_key : function(key) {
     this.key = key;
-    this._cipher = new crypto.cipher.AES(key, crypto.cipher.AES.MODE_CTR, 0, this.counter);
+    this._cipher = new kryptos.cipher.AES(key, kryptos.cipher.AES.MODE_CTR, 0, this.counter);
   },
 
   _pseudo_random_data : function(bytes) {

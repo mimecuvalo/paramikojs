@@ -1,16 +1,16 @@
-crypto.hash.baseHash = function(data) {
+kryptos.hash.baseHash = function(data) {
   if (data instanceof Array) {
-    data = crypto.fromByteArray(data);
+    data = kryptos.fromByteArray(data);
   }
   this.data = data || "";
 }
 
-crypto.hash.baseHash.prototype = {
+kryptos.hash.baseHash.prototype = {
   type : '',
 
   update : function(data) {
     if (data instanceof Array) {
-      data = crypto.fromByteArray(data);
+      data = kryptos.fromByteArray(data);
     }
     this.data = this.data + data;
   },

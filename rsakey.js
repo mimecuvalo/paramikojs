@@ -72,7 +72,7 @@ paramikojs.RSAKey.prototype = {
   },
 
   sign_ssh_data : function(rpool, data, callback) {
-    var digest = new crypto.hash.SHA(data).digest();
+    var digest = new kryptos.hash.SHA(data).digest();
     var pkcs1imified = this._pkcs1imify(digest);
 
     // XXX well, ain't this some shit.  We have to use gRsaKeyWorkerJs b/c
@@ -97,8 +97,8 @@ paramikojs.RSAKey.prototype = {
     // verify the signature by SHA'ing the data and encrypting it using the
     // public key.  some wackiness ensues where we "pkcs1imify" the 20-byte
     // hash into a string as long as the RSA key.
-    var hash_obj = paramikojs.util.inflate_long(this._pkcs1imify(new crypto.hash.SHA(data).digest()), true);
-    var rsa = new crypto.publicKey.RSA().construct(this.n, this.e);
+    var hash_obj = paramikojs.util.inflate_long(this._pkcs1imify(new kryptos.hash.SHA(data).digest()), true);
+    var rsa = new kryptos.publicKey.RSA().construct(this.n, this.e);
     return rsa.verify(hash_obj, [sig]);
   },
 
@@ -140,7 +140,7 @@ paramikojs.RSAKey.prototype = {
     @rtype: L{RSAKey}
   */
   generate : function(bits, progress_func) {
-    var rsa = new crypto.publicKey.RSA().generate(bits, paramikojs.rng.read, progress_func);
+    var rsa = new kryptos.publicKey.RSA().generate(bits, paramikojs.rng.read, progress_func);
     var key = new paramikojs.RSAKey(null, null, null, null, [rsa.e, rsa.n], null);
     key.d = rsa.d;
     key.p = rsa.p;

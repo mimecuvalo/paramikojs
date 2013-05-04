@@ -105,7 +105,7 @@ sjcl.cipher.aes.prototype = {
         }
         ct = sjcl.codec.bytes.fromBits(this._crypt(sjcl.codec.bytes.toBits(aBlock),0));
       } else {
-        ct = sjcl.codec.bytes.fromBits(this._crypt(sjcl.codec.bytes.toBits(crypto.toByteArray(counter.call())),0));
+        ct = sjcl.codec.bytes.fromBits(this._crypt(sjcl.codec.bytes.toBits(kryptos.toByteArray(counter.call())),0));
         for (var i = 0; i < 16; i++) {
           ct[i] ^= aBlock[i];
         }
@@ -357,35 +357,35 @@ sjcl.bitArray = {
 
 
 
-crypto.cipher.AES = function(key, mode, iv, counter) {
-  this.cipher = new sjcl.cipher.aes(sjcl.codec.bytes.toBits(crypto.toByteArray(key)), mode);
+kryptos.cipher.AES = function(key, mode, iv, counter) {
+  this.cipher = new sjcl.cipher.aes(sjcl.codec.bytes.toBits(kryptos.toByteArray(key)), mode);
   this.mode = mode;
-  if (this.mode == crypto.cipher.AES.MODE_CBC) {
-    this.iv = crypto.toByteArray(iv);
+  if (this.mode == kryptos.cipher.AES.MODE_CBC) {
+    this.iv = kryptos.toByteArray(iv);
   }
   this.counter = counter;
 }
 
-crypto.cipher.AES.MODE_CTR = 6;
-crypto.cipher.AES.MODE_CBC = 2;
+kryptos.cipher.AES.MODE_CTR = 6;
+kryptos.cipher.AES.MODE_CBC = 2;
 
-crypto.cipher.AES.prototype = {
+kryptos.cipher.AES.prototype = {
   encrypt : function(plaintext) {
-    var ciphertext = this.cipher.encrypt(crypto.toByteArray(plaintext), this.iv, this.counter);
-    if (this.mode == crypto.cipher.AES.MODE_CBC) {
+    var ciphertext = this.cipher.encrypt(kryptos.toByteArray(plaintext), this.iv, this.counter);
+    if (this.mode == kryptos.cipher.AES.MODE_CBC) {
       this.iv = ciphertext.slice(-16);
     }
-    return crypto.fromByteArray(ciphertext);
+    return kryptos.fromByteArray(ciphertext);
   },
 
   decrypt : function(ciphertext) {
-    ciphertext = crypto.toByteArray(ciphertext);
-    if (this.mode == crypto.cipher.AES.MODE_CBC) {
+    ciphertext = kryptos.toByteArray(ciphertext);
+    if (this.mode == kryptos.cipher.AES.MODE_CBC) {
       var plaintext = this.cipher.decrypt(ciphertext, this.iv);
       this.iv = ciphertext.slice(-16);
     } else {
       var plaintext = this.cipher.encrypt(ciphertext, this.iv, this.counter);
     }
-    return crypto.fromByteArray(plaintext);
+    return kryptos.fromByteArray(plaintext);
   }
 };

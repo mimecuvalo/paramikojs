@@ -1,18 +1,12 @@
-// We need this in Chrome for this worker but not in the main app. Hmm...
-crypto = function() {};
-crypto.prototype = {
-  
-};
-
-importScripts('crypto/crypto.js',
-              'crypto/PublicKey/RSA.js',
+importScripts('kryptos/kryptos.js',
+              'kryptos/PublicKey/RSA.js',
               'common.js',
               'python_shim.js',
               'BigInteger.js',
               'util.js');
 
 onmessage = function(event) {
-  var rsa = new crypto.publicKey.RSA().construct(new BigInteger(event.data.n, 10),
+  var rsa = new kryptos.publicKey.RSA().construct(new BigInteger(event.data.n, 10),
                                                  new BigInteger(event.data.e, 10),
                                                  new BigInteger(event.data.d, 10));
   var inflated = paramikojs.util.inflate_long(event.data.pkcs1imified, true);

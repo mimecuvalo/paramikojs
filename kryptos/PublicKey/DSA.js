@@ -1,8 +1,8 @@
-crypto.publicKey.DSA = function() {
+kryptos.publicKey.DSA = function() {
   
 }
 
-crypto.publicKey.DSA.prototype = {
+kryptos.publicKey.DSA.prototype = {
   construct : function(y, g, p, q, x) {
     this.y = y;
     this.g = g;

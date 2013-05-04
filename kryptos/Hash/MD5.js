@@ -1,21 +1,21 @@
-crypto.hash.MD5 = function(str) {
-  inherit(this, new crypto.hash.baseHash(str));
+kryptos.hash.MD5 = function(str) {
+  inherit(this, new kryptos.hash.baseHash(str));
 }
 
-crypto.hash.MD5.digest_size = 16;
+kryptos.hash.MD5.digest_size = 16;
 
-crypto.hash.MD5.prototype = {
+kryptos.hash.MD5.prototype = {
   type : 'md5'
 };
 
 // http://code.google.com/p/crypto-js/source/browse/branches/2.x/src/MD5.js
 // BSD license: http://www.opensource.org/licenses/bsd-license.php
 if (!Components) {  // Chrome
-  crypto.hash.MD5.prototype = {
+  kryptos.hash.MD5.prototype = {
     digest: function() {
-      var hashData = crypto.toByteArray(this.data);
+      var hashData = kryptos.toByteArray(this.data);
 
-      var m = crypto.bytesToWords(hashData),
+      var m = kryptos.bytesToWords(hashData),
           l = hashData.length * 8,
           a =  1732584193,
           b = -271733879,
@@ -148,7 +148,7 @@ if (!Components) {  // Chrome
         return n;
       };
 
-      return crypto.fromByteArray(crypto.wordsToBytes(endian([a, b, c, d])));
+      return kryptos.fromByteArray(kryptos.wordsToBytes(endian([a, b, c, d])));
     }
   };
 }

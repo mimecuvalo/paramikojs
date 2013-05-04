@@ -23,8 +23,8 @@ paramikojs.PKey = function(msg, data) {
 paramikojs.PKey.prototype = {
   // known encryption types for private key files:
   _CIPHER_TABLE : {
-    'AES-128-CBC': { 'cipher': crypto.cipher.AES, 'keysize': 16, 'blocksize': 16, 'mode': crypto.cipher.AES.MODE_CBC },
-    'DES-EDE3-CBC': { 'cipher': crypto.cipher.DES3, 'keysize': 24, 'blocksize': 8, 'mode': crypto.cipher.DES3.MODE_CBC }
+    'AES-128-CBC': { 'cipher': kryptos.cipher.AES, 'keysize': 16, 'blocksize': 16, 'mode': kryptos.cipher.AES.MODE_CBC },
+    'DES-EDE3-CBC': { 'cipher': kryptos.cipher.DES3, 'keysize': 24, 'blocksize': 8, 'mode': kryptos.cipher.DES3.MODE_CBC }
   },
 
   /*
@@ -81,7 +81,7 @@ paramikojs.PKey.prototype = {
     @rtype: str
   */
   get_fingerprint : function() {
-    return new crypto.hash.MD5(this.toString()).digest();
+    return new kryptos.hash.MD5(this.toString()).digest();
   },
 
   /*
@@ -319,7 +319,7 @@ paramikojs.PKey.prototype = {
     var keysize = this._CIPHER_TABLE[encryption_type]['keysize'];
     var mode = this._CIPHER_TABLE[encryption_type]['mode'];
     var salt = paramikojs.util.unhexify(saltstr);
-    var key = paramikojs.util.generate_key_bytes(crypto.hash.MD5, salt, password, keysize);
+    var key = paramikojs.util.generate_key_bytes(kryptos.hash.MD5, salt, password, keysize);
     return new cipher(key, mode, salt).decrypt(data);
   },
 
@@ -401,13 +401,13 @@ paramikojs.PKey.prototype = {
      * This is used to decrypt the private key when it's encrypted.
      */
     var toKey = function(passphrase) {
-      var digest = new crypto.hash.SHA();
+      var digest = new kryptos.hash.SHA();
 
       digest.update("\0\0\0\0");
       digest.update(passphrase);
       var key1 = digest.digest();
 
-      digest = new crypto.hash.SHA();
+      digest = new kryptos.hash.SHA();
       digest.update("\0\0\0\1");
       digest.update(passphrase);
       var key2 = digest.digest();
@@ -418,14 +418,14 @@ paramikojs.PKey.prototype = {
     if (encrypted) {
       var key = toKey(passphrase);
 
-      var aes = new crypto.cipher.AES(key, crypto.cipher.AES.MODE_CBC, new Array(16 + 1).join('\0'));
+      var aes = new kryptos.cipher.AES(key, kryptos.cipher.AES.MODE_CBC, new Array(16 + 1).join('\0'));
 
       privateLines = aes.decrypt(privateLines);
     }
 
     // check MAC
     if (headers["Private-MAC"]) {
-      var key = new crypto.hash.SHA("putty-private-key-file-mac-key");
+      var key = new kryptos.hash.SHA("putty-private-key-file-mac-key");
       if (encrypted) {
         key.update(passphrase);
       }
@@ -438,7 +438,7 @@ paramikojs.PKey.prototype = {
       message.add_string(publicKey);
       message.add_string(privateLines);
 
-      var realmac = binascii.hexlify(crypto.hash.HMAC(key, message.toString(), crypto.hash.HMAC_SHA));
+      var realmac = binascii.hexlify(kryptos.hash.HMAC(key, message.toString(), kryptos.hash.HMAC_SHA));
 
       if (headers["Private-MAC"] != realmac) {
         throw new paramikojs.ssh_exception.SSHException('Unable to parse key file');
@@ -513,7 +513,7 @@ paramikojs.PKey.prototype = {
       var blocksize = this._CIPHER_TABLE[cipher_name]['blocksize'];
       var mode = this._CIPHER_TABLE[cipher_name]['mode'];
       var salt = paramikojs.rng.read(8);
-      var key = paramikojs.util.generate_key_bytes(crypto.hash.MD5, salt, password, keysize);
+      var key = paramikojs.util.generate_key_bytes(kryptos.hash.MD5, salt, password, keysize);
       if (data.length % blocksize != 0) {
         var n = blocksize - data.length % blocksize;
         //data += rng.read(n)

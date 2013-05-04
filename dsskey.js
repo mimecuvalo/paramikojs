@@ -84,8 +84,8 @@ paramikojs.DSSKey.prototype = {
   },
 
   sign_ssh_data : function(rng, data, callback) {
-    var digest = new crypto.hash.SHA(data).digest();
-    var dss = new crypto.publicKey.DSA().construct(this.y, this.g, this.p, this.q, this.x);
+    var digest = new kryptos.hash.SHA(data).digest();
+    var dss = new kryptos.publicKey.DSA().construct(this.y, this.g, this.p, this.q, this.x);
     // generate a suitable k
     var qsize = paramikojs.util.deflate_long(this.q, 0).length;
     var k;
@@ -129,9 +129,9 @@ paramikojs.DSSKey.prototype = {
     // pull out (r, s) which are NOT encoded as mpints
     var sigR = paramikojs.util.inflate_long(sig.substring(0, 20), 1);
     var sigS = paramikojs.util.inflate_long(sig.substring(20), 1);
-    var sigM = paramikojs.util.inflate_long(new crypto.hash.SHA(data).digest(), 1);
+    var sigM = paramikojs.util.inflate_long(new kryptos.hash.SHA(data).digest(), 1);
 
-    var dss = new crypto.publicKey.DSA().construct(this.y, this.g, this.p, this.q);
+    var dss = new kryptos.publicKey.DSA().construct(this.y, this.g, this.p, this.q);
     return dss.verify(sigM, [sigR, sigS]);
   },
 
@@ -172,7 +172,7 @@ paramikojs.DSSKey.prototype = {
   */
   generate : function(bits, progress_func) {
     bits = bits || 1024;
-    var dsa = new crypto.publicKey.DSA().generate(bits, paramikojs.rng.read, progress_func);
+    var dsa = new kryptos.publicKey.DSA().generate(bits, paramikojs.rng.read, progress_func);
     var key = new paramikojs.DSSKey(null, null, null, null, [dsa.p, dsa.q, dsa.g, dsa.y], null);
     key.x = dsa.x;
     return key;

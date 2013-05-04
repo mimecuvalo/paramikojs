@@ -307,14 +307,14 @@ paramikojs.HostKeys.prototype = {
   */
   hash_host : function(hostname, salt) {
     if (!salt) {
-      salt = paramikojs.rng.read(crypto.hash.SHA.digest_size);
+      salt = paramikojs.rng.read(kryptos.hash.SHA.digest_size);
     } else {
       if (salt.indexOf('|1|') == 0) {
         salt = salt.split('|')[2];
       }
       salt = base64.decodestring(salt);
     }
-    var hmac = crypto.hash.HMAC(salt, hostname, crypto.hash.HMAC_SHA);
+    var hmac = kryptos.hash.HMAC(salt, hostname, kryptos.hash.HMAC_SHA);
     var hostkey = '|1|' + base64.encodestring(salt) + '|' + base64.encodestring(hmac);
     return hostkey.replace('\n', '');
   }

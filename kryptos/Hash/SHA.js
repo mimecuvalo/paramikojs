@@ -1,21 +1,21 @@
-crypto.hash.SHA = function(str) {
-  inherit(this, new crypto.hash.baseHash(str));
+kryptos.hash.SHA = function(str) {
+  inherit(this, new kryptos.hash.baseHash(str));
 }
 
-crypto.hash.SHA.digest_size = 20;
+kryptos.hash.SHA.digest_size = 20;
 
-crypto.hash.SHA.prototype = {
+kryptos.hash.SHA.prototype = {
   type : 'sha1'
 };
 
 // http://code.google.com/p/crypto-js/source/browse/branches/2.x/src/SHA1.js
 // BSD license: http://www.opensource.org/licenses/bsd-license.php
 if (!Components) {  // Chrome
-  crypto.hash.SHA.prototype = {
+  kryptos.hash.SHA.prototype = {
     digest: function() {
-      var hashData = crypto.toByteArray(this.data);
+      var hashData = kryptos.toByteArray(this.data);
 
-      var m  = crypto.bytesToWords(hashData),
+      var m  = kryptos.bytesToWords(hashData),
           l  = hashData.length * 8,
           w  =  [],
           H0 =  1732584193,
@@ -63,7 +63,7 @@ if (!Components) {  // Chrome
         H4 += e;
       }
 
-      return crypto.fromByteArray(crypto.wordsToBytes([H0, H1, H2, H3, H4]));
+      return kryptos.fromByteArray(kryptos.wordsToBytes([H0, H1, H2, H3, H4]));
     }
   };
 }

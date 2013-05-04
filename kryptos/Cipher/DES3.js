@@ -200,15 +200,15 @@ return {
 
 })();
 
-crypto.cipher.DES3 = function(key, mode, iv) {
+kryptos.cipher.DES3 = function(key, mode, iv) {
   this.keys = DES3.des_createKeys(key);
-  this.mode = mode == crypto.cipher.DES3.MODE_CBC ? 1 : 0;
+  this.mode = mode == kryptos.cipher.DES3.MODE_CBC ? 1 : 0;
   this.iv = iv;
 }
 
-crypto.cipher.DES3.MODE_CBC = 2;
+kryptos.cipher.DES3.MODE_CBC = 2;
 
-crypto.cipher.DES3.prototype = {
+kryptos.cipher.DES3.prototype = {
   encrypt : function(plaintext) {
     var ciphertext = DES3.des(null, plaintext, true, this.mode, this.iv, null, this.keys);
     this.iv = ciphertext.substring(ciphertext.length - 8);

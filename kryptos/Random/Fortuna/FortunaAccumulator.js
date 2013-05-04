@@ -1,4 +1,4 @@
-crypto.random.Fortuna.FortunaPool = function() {
+kryptos.random.Fortuna.FortunaPool = function() {
   /*
     Fortuna pool type
 
@@ -12,8 +12,8 @@ crypto.random.Fortuna.FortunaPool = function() {
   this.reset();
 }
 
-crypto.random.Fortuna.FortunaPool.prototype = {
-  digest_size : crypto.random.Fortuna.SHAd256.digest_size,
+kryptos.random.Fortuna.FortunaPool.prototype = {
+  digest_size : kryptos.random.Fortuna.SHAd256.digest_size,
 
   append : function(data) {
     this._h.update(data);
@@ -25,13 +25,13 @@ crypto.random.Fortuna.FortunaPool.prototype = {
   },
 
   reset : function() {
-    this._h = new crypto.random.Fortuna.SHAd256();
+    this._h = new kryptos.random.Fortuna.SHAd256();
     this.length = 0;
   }
 };
 
 
-crypto.random.Fortuna.which_pools = function(r) {
+kryptos.random.Fortuna.which_pools = function(r) {
   /*
     Return a list of pools indexes (in range(32)) that are to be included during reseed number r.
 
@@ -57,9 +57,9 @@ crypto.random.Fortuna.which_pools = function(r) {
 }
 
 
-crypto.random.Fortuna.FortunaAccumulator = function() {
+kryptos.random.Fortuna.FortunaAccumulator = function() {
   this.reseed_count = 0;
-  this.generator = new crypto.random.Fortuna.FortunaGenerator.AESGenerator();
+  this.generator = new kryptos.random.Fortuna.FortunaGenerator.AESGenerator();
   this.last_reseed = null;
 
   // Initialize 32 FortunaPool instances.
@@ -68,11 +68,11 @@ crypto.random.Fortuna.FortunaAccumulator = function() {
   // assertion below to fail).
   this.pools = [];
   for (var i = 0; i < 32; ++i) { // 32 pools
-    this.pools.push(new crypto.random.Fortuna.FortunaPool());
+    this.pools.push(new kryptos.random.Fortuna.FortunaPool());
   }
 }
 
-crypto.random.Fortuna.FortunaAccumulator.prototype = {
+kryptos.random.Fortuna.FortunaAccumulator.prototype = {
   min_pool_size : 64,       // TODO: explain why
   reseed_interval : 0.100,  // 100 ms    TODO: explain why
 
@@ -98,7 +98,7 @@ crypto.random.Fortuna.FortunaAccumulator.prototype = {
     var seed = [];
     this.reseed_count += 1;
     this.last_reseed = current_time;
-    var which_pools = crypto.random.Fortuna.which_pools(this.reseed_count);
+    var which_pools = kryptos.random.Fortuna.which_pools(this.reseed_count);
     for (var i = 0; i < which_pools.length; ++i) {
       seed.push(this.pools[i].digest());
       this.pools[i].reset();
