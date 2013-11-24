@@ -73,7 +73,8 @@ paramikojs.Message.prototype = {
   get_bytes : function(n) {
     var b = this.packet.substring(this.position, this.position + n);
     this.position += n;
-    if (b.length < n) {
+    var max_pad_size = 1 << 20;  // Limit padding to 1 MB
+    if (b.length < n && n < max_pad_size) {
       return b + new Array(n - b.length + 1).join('\x00');
     }
     return b;
