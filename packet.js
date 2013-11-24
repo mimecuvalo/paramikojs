@@ -44,8 +44,10 @@ paramikojs.Packetizer = function(socket) {
 paramikojs.Packetizer.prototype = {
 	// READ the secsh RFC's before raising these values.  if anything,
   // they should probably be lower.
-  REKEY_PACKETS : Math.pow(2, 30),
-  REKEY_BYTES : Math.pow(2, 30),
+  REKEY_PACKETS : Math.pow(2, 29),
+  REKEY_BYTES : Math.pow(2, 29),
+  REKEY_PACKETS_OVERFLOW_MAX : Math.pow(2, 29),   // Allow receiving this many packets after a re-key request before terminating
+  REKEY_BYTES_OVERFLOW_MAX : Math.pow(2, 29),     // Allow receiving this many bytes after a re-key request before terminating
 
   set_log : function(log) {
     this.__logger = log;
@@ -81,6 +83,7 @@ paramikojs.Packetizer.prototype = {
     this.__mac_key_in = mac_key;
     this.__received_bytes = 0;
     this.__received_packets = 0;
+    this.__received_bytes_overflow = 0;
     this.__received_packets_overflow = 0;
     // wait until the reset happens in both directions before clearing rekey flag
     this.__init_count |= 2;
@@ -236,7 +239,8 @@ paramikojs.Packetizer.prototype = {
     if ((this.__sent_packets >= this.REKEY_PACKETS || this.__sent_bytes >= this.REKEY_BYTES)
            && !this.__need_rekey) {
       // only ask once for rekeying
-      this._log(DEBUG, 'Rekeying (hit ' + this.__sent_packets + ' packets, ' + this.__sent_bytes + ' bytes sent)')
+      this._log(DEBUG, 'Rekeying (hit ' + this.__sent_packets + ' packets, ' + this.__sent_bytes + ' bytes sent)');
+      this.__received_bytes_overflow = 0;
       this.__received_packets_overflow = 0;
       this._trigger_rekey();
     }
@@ -317,19 +321,23 @@ paramikojs.Packetizer.prototype = {
     this.__sequence_number_in = (this.__sequence_number_in + 1) & 0xffffffff;
 
     // check for rekey
-    this.__received_bytes += packet_size + this.__mac_size_in + 4;
+    var raw_packet_size = packet_size + this.__mac_size_in + 4;
+    this.__received_bytes += raw_packet_size;
     this.__received_packets += 1;
     if (this.__need_rekey) {
-      // we've asked to rekey -- give them 20 packets to comply before
+      // we've asked to rekey -- give them some packets to comply before
       // dropping the connection
+      this.__received_bytes_overflow += raw_packet_size;
       this.__received_packets_overflow += 1;
-      if (this.__received_packets_overflow >= 20) {
+      if (this.__received_packets_overflow >= this.REKEY_PACKETS_OVERFLOW_MAX ||
+          this.__received_bytes_overflow >= this.REKEY_BYTES_OVERFLOW_MAX) {
         throw new paramikojs.ssh_exception.SSHException('Remote transport is ignoring rekey requests');
       }
     } else if (this.__received_packets >= this.REKEY_PACKETS ||
       this.__received_bytes >= this.REKEY_BYTES) {
       // only ask once for rekeying
       this._log(DEBUG, 'Rekeying (hit ' + this.__received_packets + ' packets, ' + this.__received_bytes + ' bytes received)');
+      this.__received_bytes_overflow = 0;
       this.__received_packets_overflow = 0;
       this._trigger_rekey();
     }
