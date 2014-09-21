@@ -1,4 +1,4 @@
-if (Components) { // Mozilla
+if (Components && Components.classes) { // Mozilla extension
   kryptos.hash.HMAC = function(key, msg, digestmod) {
     var hasher = Components.classes["@mozilla.org/security/hmac;1"].createInstance(Components.interfaces.nsICryptoHMAC);
     var keyObject = Components.classes["@mozilla.org/security/keyobjectfactory;1"]
@@ -13,7 +13,7 @@ if (Components) { // Mozilla
 
   kryptos.hash.HMAC_SHA = Components.classes["@mozilla.org/security/hmac;1"].createInstance(Components.interfaces.nsICryptoHMAC).SHA1;
   kryptos.hash.HMAC_MD5 = Components.classes["@mozilla.org/security/hmac;1"].createInstance(Components.interfaces.nsICryptoHMAC).MD5;
-} else {  // Chrome
+} else {  // Chrome or plain Mozilla
   kryptos.hash.HMAC = function(key, msg, digestmod) {
     var blocksize = 64;
     var ipad = 0x36;

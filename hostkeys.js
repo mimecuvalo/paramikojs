@@ -123,7 +123,7 @@ paramikojs.HostKeys.prototype = {
     @raise IOError: if there was an error reading the file
   */
   load : function(filename) {
-    if (Components) { // Mozilla
+    if ((Components && Components.classes)) { // Mozilla
       var file = localFile.init(filename);
       if (!file.exists()) {
         this._entries = [];
@@ -152,7 +152,7 @@ paramikojs.HostKeys.prototype = {
     var cont;
     do {
       line = {};
-      if (Components) { // Mozilla
+      if ((Components && Components.classes)) { // Mozilla
         cont = is.readLine(line);
         line = line.value.trim();
       } else {  // Chrome
@@ -171,7 +171,7 @@ paramikojs.HostKeys.prototype = {
       // Now you can do something with line.value
     } while (cont);
 
-    if (Components) {
+    if ((Components && Components.classes)) {
       is.close();
     }
   },
@@ -190,7 +190,7 @@ paramikojs.HostKeys.prototype = {
     @since: 1.6.1
   */
   save : function(filename) {
-    if (Components) { // Mozilla
+    if ((Components && Components.classes)) { // Mozilla
       var file = localFile.init(filename);
       var foStream = Components.classes["@mozilla.org/network/file-output-stream;1"].createInstance(Components.interfaces.nsIFileOutputStream);
       foStream.init(file, 0x02 | 0x08 | 0x20, 0644, 0);
@@ -206,7 +206,7 @@ paramikojs.HostKeys.prototype = {
       }
     }
 
-    if (Components) { // Mozilla
+    if ((Components && Components.classes)) { // Mozilla
       converter.writeString(data);
       converter.close();
     } else {

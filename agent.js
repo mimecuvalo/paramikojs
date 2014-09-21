@@ -20,6 +20,10 @@ paramikojs.Agent = function () {
 
   this.conn = null;
   this.keys = [];
+
+  if(!(Components && Components.classes)) {
+    throw new Error("Unable to use OS environment without Mozilla's Components.classes"); //FIXME
+  }
   var userEnvironment = Components.classes["@mozilla.org/process/environment;1"].getService(Components.interfaces.nsIEnvironment);
   if (userEnvironment.exists('SSH_AUTH_SOCK') && sys.platform != 'win32') {
     var conn = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM); // todo, fixme, doesn't work right now :-/
