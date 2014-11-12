@@ -65,7 +65,7 @@ paramikojs.transport.prototype = {
                          'arcfour128', 'arcfour256' ],
   _preferred_macs : [ 'hmac-sha1', 'hmac-md5', 'hmac-sha1-96', 'hmac-md5-96' ],
   _preferred_keys : [ 'ssh-rsa', 'ssh-dss' ],
-  _preferred_kex  : [ 'diffie-hellman-group1-sha1', 'diffie-hellman-group14-sha1', 'diffie-hellman-group-exchange-sha1' ],
+  _preferred_kex  : [ 'diffie-hellman-group14-sha1', 'diffie-hellman-group-exchange-sha1', 'diffie-hellman-group1-sha1' ],
   _preferred_compression : [ 'none' ],
 
   _cipher_info : {
