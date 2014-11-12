@@ -97,7 +97,7 @@ var struct = {
 };
 
 var sys = {
-  'browser' : navigator.userAgent.toLowerCase().indexOf('chrome') != -1 ? 'chrome' : 'mozilla',
-  'platform' : navigator.platform.toLowerCase().indexOf('linux') != -1 ? 'linux' :
-              (navigator.platform.toLowerCase().indexOf('mac') != -1   ? 'darwin' : 'win32')
+  'browser' : typeof window !== 'undefined' ? (navigator.userAgent.toLowerCase().indexOf('chrome') != -1 ? 'chrome' : 'mozilla') : 'server',
+  'platform' : typeof window !== 'undefined' ? (navigator.platform.toLowerCase().indexOf('linux') != -1 ? 'linux' :
+              (navigator.platform.toLowerCase().indexOf('mac') != -1   ? 'darwin' : 'win32')) : 'server'
 };
