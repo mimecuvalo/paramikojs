@@ -10,7 +10,7 @@ kryptos.hash.SHA.prototype = {
 
 // http://code.google.com/p/crypto-js/source/browse/branches/2.x/src/SHA1.js
 // BSD license: http://www.opensource.org/licenses/bsd-license.php
-if (!Components) {  // Chrome
+if (!(Components  && Components.classes)) {  // Chrome
   kryptos.hash.SHA.prototype = {
     digest: function() {
       var hashData = kryptos.toByteArray(this.data);

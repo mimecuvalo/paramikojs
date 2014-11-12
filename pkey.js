@@ -239,7 +239,7 @@ paramikojs.PKey.prototype = {
 
   _read_private_key : function(tag, f, password) {
     var lines;
-    if (!Components) {  // Chrome
+    if (!(Components && Components.classes)) {  // Chrome
       lines = gKeys[f];
     } else {
       lines = "";
@@ -499,6 +499,10 @@ paramikojs.PKey.prototype = {
   },
 
   _write_private_key : function(tag, f, data, password) {
+    if(!(Components && Components.classes)) {
+      throw new Error("Unable to write files without Mozilla's Components.classes"); //FIXME
+    }
+    
     var foStream = Components.classes["@mozilla.org/network/file-output-stream;1"].createInstance(Components.interfaces.nsIFileOutputStream);  
     foStream.init(f, 0x02 | 0x08 | 0x20, 0600, 0);  
     var converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);  
