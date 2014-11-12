@@ -57,7 +57,7 @@ paramikojs.transport.prototype = {
                          : { ConvertFromUnicode: function(str) { return str; }, Finish: function() { /* do nothing */ } }),
  
   _PROTO_ID : '2.0',
-  _CLIENT_ID : 'FireFTP_',
+  _CLIENT_ID : 'ParamikoJS_',
 
   // todo fixme aes128-ctr is preferred on paramiko, but too slow for JS right now.  for now, using blowfish
   // working on optimizing this...
