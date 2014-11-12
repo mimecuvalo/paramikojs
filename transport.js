@@ -65,7 +65,7 @@ paramikojs.transport.prototype = {
                          'arcfour128', 'arcfour256' ],
   _preferred_macs : [ 'hmac-sha1', 'hmac-md5', 'hmac-sha1-96', 'hmac-md5-96' ],
   _preferred_keys : [ 'ssh-rsa', 'ssh-dss' ],
-  _preferred_kex  : [ 'diffie-hellman-group1-sha1', 'diffie-hellman-group-exchange-sha1' ],
+  _preferred_kex  : [ 'diffie-hellman-group1-sha1', 'diffie-hellman-group14-sha1', 'diffie-hellman-group-exchange-sha1' ],
   _preferred_compression : [ 'none' ],
 
   _cipher_info : {
@@ -93,6 +93,7 @@ paramikojs.transport.prototype = {
 
   _kex_info : {
     'diffie-hellman-group1-sha1': function(self) { return new paramikojs.KexGroup1(self) },
+    'diffie-hellman-group14-sha1': function(self) { return new paramikojs.KexGroup14(self) },
     'diffie-hellman-group-exchange-sha1': function(self) { return new paramikojs.KexGex(self) }
   },
 

@@ -8,6 +8,9 @@ paramikojs.KexGroup1 = function(transport) {
   this.x = new BigInteger("0", 10);
   this.e = new BigInteger("0", 10);
   this.f = new BigInteger("0", 10);
+
+  this.P = paramikojs.KexGroup1.P;
+  this.G = paramikojs.KexGroup1.G;
 }
 
 paramikojs.KexGroup1._MSG_KEXDH_INIT = 30;
@@ -24,12 +27,12 @@ paramikojs.KexGroup1.prototype = {
     this._generate_x();
     if (this.transport.server_mode) {
       // compute f = g^x mod p, but don't send it yet
-      this.f = paramikojs.KexGroup1.G.modPow(this.x, paramikojs.KexGroup1.P);
+      this.f = this.G.modPow(this.x, this.P);
       this.transport._expect_packet(paramikojs.KexGroup1._MSG_KEXDH_INIT);
       return;
     }
     // compute e = g^x mod p (where g=2), and send it
-    this.e = paramikojs.KexGroup1.G.modPow(this.x, paramikojs.KexGroup1.P);
+    this.e = this.G.modPow(this.x, this.P);
     var m = new paramikojs.Message();
     m.add_byte(String.fromCharCode(paramikojs.KexGroup1._MSG_KEXDH_INIT));
     m.add_mpint(this.e);
@@ -71,11 +74,11 @@ paramikojs.KexGroup1.prototype = {
     var host_key = m.get_string();
     this.f = m.get_mpint();
     var one = BigInteger.ONE;
-    if (one.compareTo(this.f) > 0 || this.f.compareTo(paramikojs.KexGroup1.P.subtract(one)) > 0) {
+    if (one.compareTo(this.f) > 0 || this.f.compareTo(this.P.subtract(one)) > 0) {
       throw new paramikojs.ssh_exception.SSHException('Server kex "f" is out of range');
     }
     var sig = m.get_string();
-    var K = this.f.modPow(this.x, paramikojs.KexGroup1.P);
+    var K = this.f.modPow(this.x, this.P);
     // okay, build up the hash H of (V_C || V_S || I_C || I_S || K_S || e || f || K)
     var hm = new paramikojs.Message();
     hm.add(this.transport.local_version, this.transport.remote_version,
