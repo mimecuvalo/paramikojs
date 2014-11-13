@@ -3,7 +3,7 @@
   data.
 */
 paramikojs.DSSKey = function(msg, data, filename, password, vals, file_obj) {
-	inherit(this, new paramikojs.PKey());
+  inherit(this, new paramikojs.PKey());
 
   this.p = null;
   this.q = null;
@@ -42,7 +42,7 @@ paramikojs.DSSKey = function(msg, data, filename, password, vals, file_obj) {
 }
 
 paramikojs.DSSKey.prototype = {
-	toString : function() {
+  toString : function() {
     var m = new paramikojs.Message();
     m.add_string('ssh-dss');
     m.add_mpint(this.p);

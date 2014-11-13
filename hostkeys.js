@@ -40,7 +40,7 @@ paramikojs.HostKeyEntry.prototype = {
     } else if (keytype == 'ssh-dss') {
       key = new paramikojs.DSSKey(null, base64.decodestring(key));
     } else {
-      return null;
+      key = new paramikojs.UnknownKey(keytype, base64.decodestring(key));
     }
 
     return new paramikojs.HostKeyEntry(names, key);

@@ -3,7 +3,7 @@
   data.
 */
 paramikojs.RSAKey = function(msg, data, filename, password, vals, file_obj) {
-	inherit(this, new paramikojs.PKey());
+  inherit(this, new paramikojs.PKey());
 
   this.n = null;
   this.e = null;
