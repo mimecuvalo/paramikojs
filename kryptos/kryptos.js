@@ -33,3 +33,22 @@ kryptos.wordsToBytes = function(words) {
   }
   return bytes;
 };
+
+
+kryptos.heap32Set = function(dest, source, offset, opt_limit) {
+  var limit = opt_limit || 65536;
+  for (var i = 0, o = offset; i < source.length && i < limit; i++, o++) {
+    dest[o] = source[i];
+  }
+  //dest.set(source, offset);
+};
+
+kryptos.heap32SetStr = function(dest, source, offset) {
+  for (var i = 0, o = offset; i < source.length; i++, o++) {
+    dest[o] = source.charCodeAt(i);
+  }
+};
+
+kryptos.heap32GetStr = function(heap, start, end) {
+  return String.fromCharCode.apply(null, heap.subarray(start, end));
+};

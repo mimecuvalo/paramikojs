@@ -104,7 +104,7 @@ paramikojs.util.format_binary = function(data, prefix) {
 
 paramikojs.util.format_binary_line = function(data) {
 	var left = paramikojs.util.hexify(data, ' ');
-  left = left.length < 50 ? left + new Array(50 - left.length + 1).join('&nbsp;') : left;
+  left = left.length < 50 ? left + new Array(50 - left.length + 1).join(' ') : left;
   var right = "";
   for (var x = 0; x < data.length; ++x) {
     var c = data[x];
