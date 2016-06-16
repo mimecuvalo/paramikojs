@@ -80,10 +80,10 @@ paramikojs.transport.prototype = {
   },
 
   _mac_info : {
-    'hmac-sha1': { 'class': kryptos.hash.HMAC_SHA, 'size': 20 },
-    'hmac-sha1-96': { 'class': kryptos.hash.HMAC_SHA, 'size': 12 },
-    'hmac-md5': { 'class': kryptos.hash.HMAC_MD5, 'size': 16 },
-    'hmac-md5-96': { 'class': kryptos.hash.HMAC_MD5, 'size': 12 }
+    'hmac-sha1': { 'class': kryptos.hash.HMAC_SHA, 'size': 20, 'digest_size': kryptos.hash.SHA.digest_size },
+    'hmac-sha1-96': { 'class': kryptos.hash.HMAC_SHA, 'size': 12, 'digest_size': kryptos.hash.SHA.digest_size },
+    'hmac-md5': { 'class': kryptos.hash.HMAC_MD5, 'size': 16, 'digest_size': kryptos.hash.MD5.digest_size },
+    'hmac-md5-96': { 'class': kryptos.hash.HMAC_MD5, 'size': 12, 'digest_size': kryptos.hash.MD5.digest_size }
   },
 
   _key_info : {
@@ -1164,9 +1164,10 @@ paramikojs.transport.prototype = {
     var engine = this._get_cipher(this.remote_cipher, key_in, IV_in);
     var mac_size = this._mac_info[this.remote_mac]['size'];
     var mac_engine = this._mac_info[this.remote_mac]['class'];
+    var mac_engine_digest_size = this._mac_info[this.remote_mac]['digest_size'];
     // initial mac keys are done in the hash's natural size (not the potentially truncated
     // transmission size)
-    var mac_key = this._compute_key('F', mac_engine.digest_size);
+    var mac_key = this._compute_key('F', mac_engine_digest_size);
     this.packetizer.set_inbound_cipher(engine, block_size, mac_engine, mac_size, mac_key);
     var compress_in = this._compression_info[this.remote_compression][1];
     if (compress_in && (this.remote_compression != 'zlib@openssh.com' || this.authenticated)) {
@@ -1186,9 +1187,10 @@ paramikojs.transport.prototype = {
     var engine = this._get_cipher(this.local_cipher, key_out, IV_out);
     var mac_size = this._mac_info[this.local_mac]['size'];
     var mac_engine = this._mac_info[this.local_mac]['class'];
+    var mac_engine_digest_size = this._mac_info[this.remote_mac]['digest_size'];
     // initial mac keys are done in the hash's natural size (not the potentially truncated
     // transmission size)
-    var mac_key = this._compute_key('E', mac_engine.digest_size);
+    var mac_key = this._compute_key('E', mac_engine_digest_size);
     this.packetizer.set_outbound_cipher(engine, block_size, mac_engine, mac_size, mac_key);
     var compress_out = this._compression_info[this.local_compression][0];
     if (compress_out && (this.local_compression != 'zlib@openssh.com' || this.authenticated)) {
