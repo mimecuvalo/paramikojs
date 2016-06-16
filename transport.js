@@ -63,7 +63,7 @@ paramikojs.transport.prototype = {
   // working on optimizing this...
   _preferred_ciphers : [ 'blowfish-cbc', 'aes128-ctr', 'aes256-ctr', 'aes128-cbc', 'aes256-cbc', '3des-cbc',
                          'arcfour128', 'arcfour256' ],
-  _preferred_macs : [ 'hmac-sha1', 'hmac-md5', 'hmac-sha1-96', 'hmac-md5-96' ],
+  _preferred_macs : [ 'hmac-sha2-256', 'hmac-sha1', 'hmac-md5', 'hmac-sha1-96', 'hmac-md5-96' ],
   _preferred_keys : [ 'ssh-rsa', 'ssh-dss' ],
   _preferred_kex  : [ 'diffie-hellman-group14-sha1', 'diffie-hellman-group-exchange-sha1', 'diffie-hellman-group1-sha1' ],
   _preferred_compression : [ 'none' ],
@@ -82,6 +82,7 @@ paramikojs.transport.prototype = {
   _mac_info : {
     'hmac-sha1': { 'class': kryptos.hash.HMAC_SHA, 'size': 20, 'digest_size': kryptos.hash.SHA.digest_size },
     'hmac-sha1-96': { 'class': kryptos.hash.HMAC_SHA, 'size': 12, 'digest_size': kryptos.hash.SHA.digest_size },
+    'hmac-sha2-256': { 'class': kryptos.hash.HMAC_SHA256, 'size': 32, 'digest_size': kryptos.hash.SHA256.digest_size },
     'hmac-md5': { 'class': kryptos.hash.HMAC_MD5, 'size': 16, 'digest_size': kryptos.hash.MD5.digest_size },
     'hmac-md5-96': { 'class': kryptos.hash.HMAC_MD5, 'size': 12, 'digest_size': kryptos.hash.MD5.digest_size }
   },

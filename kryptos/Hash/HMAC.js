@@ -12,6 +12,8 @@ if (Components && Components.classes) { // Mozilla extension
   };
 
   kryptos.hash.HMAC_SHA = Components.classes["@mozilla.org/security/hmac;1"].createInstance(Components.interfaces.nsICryptoHMAC).SHA1;
+  kryptos.hash.HMAC_SHA256 = Components.classes["@mozilla.org/security/hmac;1"].createInstance(Components.interfaces.nsICryptoHMAC).SHA256;
+  kryptos.hash.HMAC_SHA512 = Components.classes["@mozilla.org/security/hmac;1"].createInstance(Components.interfaces.nsICryptoHMAC).SHA512;
   kryptos.hash.HMAC_MD5 = Components.classes["@mozilla.org/security/hmac;1"].createInstance(Components.interfaces.nsICryptoHMAC).MD5;
 } else {  // Chrome or plain Mozilla
   kryptos.hash.HMAC = function(key, msg, digestmod) {
@@ -19,7 +21,21 @@ if (Components && Components.classes) { // Mozilla extension
     var ipad = 0x36;
     var opad = 0x5C;
 
-    var hasher = digestmod == 3 ? kryptos.hash.SHA : kryptos.hash.MD5;
+    var hasher;
+    switch (digestmod) {
+      case 2:
+        hasher = kryptos.hash.MD5;
+        break;
+      case 3:
+        hasher = kryptos.hash.SHA;
+        break;
+      case 4:
+        hasher = kryptos.hash.SHA256;
+        break;
+      case 6:
+        hasher = kryptos.hash.SHA512;
+        break;
+    }
 
     var outer = new hasher();
     var inner = new hasher();
@@ -45,5 +61,7 @@ if (Components && Components.classes) { // Mozilla extension
     return outer.digest();
   };
   kryptos.hash.HMAC_SHA = 3;
+  kryptos.hash.HMAC_SHA256 = 4;
+  kryptos.hash.HMAC_SHA512 = 6;
   kryptos.hash.HMAC_MD5 = 2;
 }
