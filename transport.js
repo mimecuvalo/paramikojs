@@ -30,8 +30,8 @@ paramikojs.transport = function(observer) {
   this.channel_events = { };       // (id -> Event)
   this.channels_seen = { };        // (id -> True)
   this._channel_counter = 1;
-  this.window_size = 65536;
-  this.max_packet_size = 34816;
+  this.max_packet_size = Math.pow(2, 15);
+  this.window_size = 64 * this.max_packet_size;
   this._x11_handler = null;
   this._tcp_handler = null;
 
