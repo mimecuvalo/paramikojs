@@ -33,3 +33,17 @@ kryptos.wordsToBytes = function(words) {
   }
   return bytes;
 };
+
+kryptos.hexToBytes = function(hexStr) {
+  for (var bytes = [], ch = 0; ch < hexStr.length; ch += 2)
+    bytes.push(parseInt(hexStr.substr(ch, 2), 16));
+  return bytes;
+};
+
+kryptos.bytesToHex = function(bytes) {
+  for (var hexStr = [], ch = 0; ch < bytes.length; ch++) {
+    hexStr.push((bytes[ch] >>> 4).toString(16));
+    hexStr.push((bytes[ch] & 15).toString(16));
+  }
+  return hexStr.join('');
+};

@@ -34,6 +34,7 @@ if (Components && Components.classes) { // Mozilla extension
         break;
       case 6:
         hasher = kryptos.hash.SHA512;
+        blocksize = 128;
         break;
     }
 
