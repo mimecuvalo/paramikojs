@@ -1189,7 +1189,7 @@ paramikojs.transport.prototype = {
     var engine = this._get_cipher(this.local_cipher, key_out, IV_out);
     var mac_size = this._mac_info[this.local_mac]['size'];
     var mac_engine = this._mac_info[this.local_mac]['class'];
-    var mac_engine_digest_size = this._mac_info[this.remote_mac]['digest_size'];
+    var mac_engine_digest_size = this._mac_info[this.local_mac]['digest_size'];
     // initial mac keys are done in the hash's natural size (not the potentially truncated
     // transmission size)
     var mac_key = this._compute_key('E', mac_engine_digest_size);
