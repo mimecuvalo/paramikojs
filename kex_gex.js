@@ -13,6 +13,7 @@ paramikojs.KexGex = function(transport) {
   this.e = null;
   this.f = null;
   this.old_style = false;
+  this.hash_algo = kryptos.hash.SHA;
 }
 
 
@@ -134,8 +135,14 @@ paramikojs.KexGex.prototype = {
     hm.add_mpint(this.e);
     hm.add_mpint(this.f);
     hm.add_mpint(K);
-    this.transport._set_K_H(K, new kryptos.hash.SHA(hm.toString()).digest());
+    this.transport._set_K_H(K, new this.hash_algo(hm.toString()).digest());
     this.transport._verify_key(host_key, sig);
     this.transport._activate_outbound();
   }
+};
+
+paramikojs.KexGexSHA256 = function(transport) {
+  inherit(this, new paramikojs.KexGex(transport));
+  this.name = 'diffie-hellman-group-exchange-sha256';
+  this.hash_algo = kryptos.hash.SHA256;
 };

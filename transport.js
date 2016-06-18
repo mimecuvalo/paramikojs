@@ -65,7 +65,7 @@ paramikojs.transport.prototype = {
                          'arcfour128', 'arcfour256' ],
   _preferred_macs : [ 'hmac-sha2-256', 'hmac-sha2-512', 'hmac-sha1', 'hmac-md5', 'hmac-sha1-96', 'hmac-md5-96' ],
   _preferred_keys : [ 'ssh-rsa', 'ssh-dss' ],
-  _preferred_kex  : [ 'diffie-hellman-group14-sha1', 'diffie-hellman-group-exchange-sha1', 'diffie-hellman-group1-sha1' ],
+  _preferred_kex  : [ 'diffie-hellman-group-exchange-sha256', 'diffie-hellman-group14-sha1', 'diffie-hellman-group-exchange-sha1', 'diffie-hellman-group1-sha1' ],
   _preferred_compression : [ 'none' ],
 
   _cipher_info : {
@@ -96,7 +96,8 @@ paramikojs.transport.prototype = {
   _kex_info : {
     'diffie-hellman-group1-sha1': function(self) { return new paramikojs.KexGroup1(self) },
     'diffie-hellman-group14-sha1': function(self) { return new paramikojs.KexGroup14(self) },
-    'diffie-hellman-group-exchange-sha1': function(self) { return new paramikojs.KexGex(self) }
+    'diffie-hellman-group-exchange-sha1': function(self) { return new paramikojs.KexGex(self) },
+    'diffie-hellman-group-exchange-sha256':  function(self) { return new paramikojs.KexGexSHA256(self) },
   },
 
   _compression_info : {
@@ -864,13 +865,14 @@ paramikojs.transport.prototype = {
     m.add_byte(id);
     m.add_bytes(this.session_id);
     var out, sofar, digest;
-    out = sofar = new kryptos.hash.SHA(m.toString()).digest();
+    var hash_algo = this.kex_engine.hash_algo;
+    out = sofar = new hash_algo(m.toString()).digest();
     while (out.length < nbytes) {
       m = new paramikojs.Message();
       m.add_mpint(this.K);
       m.add_bytes(this.H);
       m.add_bytes(sofar);
-      digest = new kryptos.hash.SHA(m.toString()).digest();
+      digest = new hash_algo(m.toString()).digest();
       out += digest;
       sofar += digest;
     }

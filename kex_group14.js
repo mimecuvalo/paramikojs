@@ -10,6 +10,7 @@ paramikojs.KexGroup14 = function(transport) {
 
   this.P = paramikojs.KexGroup14.P;
   this.G = paramikojs.KexGroup14.G;
+  this.hash_algo = kryptos.hash.SHA;
 }
 
 // http://tools.ietf.org/html/rfc3526#section-3

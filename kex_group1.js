@@ -11,6 +11,7 @@ paramikojs.KexGroup1 = function(transport) {
 
   this.P = paramikojs.KexGroup1.P;
   this.G = paramikojs.KexGroup1.G;
+  this.hash_algo = kryptos.hash.SHA;
 }
 
 paramikojs.KexGroup1._MSG_KEXDH_INIT = 30;
